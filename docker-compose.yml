@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+  db:
+    build:
+      context: postgres/
+      dockerfile: Dockerfile
+    ports:
+      - 5432:5432
+    environment:
+      - PSQL_HISTFILE=/root/log/.psql_history
+      - POSTGRES_HOST_AUTH_METHOD=trust # ONLY for local use
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - data-volume:/var/lib/postgresql/data/pgdata
+      - ./log:/root/log:cached
+    command:
+      - postgres
+      # - --config_file=/etc/postgresql/postgresql.conf
+
+  redis:
+    build:
+      context: redis/
+      dockerfile: Dockerfile
+    ports:
+      - 6379:6379
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis-volume:/data
+
+volumes:
+  data-volume:
+    labels:
+      local.keep: "true"
+  redis-volume:
+    labels:
+      local.keep: "true"
